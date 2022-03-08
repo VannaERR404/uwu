@@ -6,8 +6,6 @@ using static UnityEngine.InputSystem.InputAction;
 
 public class Movement : MonoBehaviour
 {
-    [SerializeField] BoxCollider2D col;
-    //[SerializeField] CircleCollider2D col;
     [SerializeField] Rigidbody2D rb;
     public float speed;
     public float jumpForce;
@@ -16,7 +14,10 @@ public class Movement : MonoBehaviour
     public float fallMultiplier;
     public float slowFallMultiplier;
     public bool isAirborne = true;
+    public bool isOnSide = false;
     public LayerMask boxCastLayerMask;
+    public int jumpStage;
+    public int maxJumps;
 
     void Start()
     {
@@ -24,16 +25,26 @@ public class Movement : MonoBehaviour
 
     private void Update()
     {
-        RaycastHit2D hit = Physics2D.BoxCast(transform.position, col.size, transform.rotation.eulerAngles.z, Vector2.down, Mathf.Infinity, boxCastLayerMask);
-        //RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, boxCastLayerMask);
-        isAirborne = hit.distance > 0.51;
-        tbd();
+
+        RaycastHit2D down = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, boxCastLayerMask);
+        isAirborne = down.distance > 0.61;
+        if (!isAirborne) { jumpStage = 1; }
 
     }
     void FixedUpdate()
     {
+        RaycastHit2D right = Physics2D.Raycast(transform.position, Vector2.right, Mathf.Infinity, boxCastLayerMask);
+        RaycastHit2D left = Physics2D.Raycast(transform.position, Vector2.left, Mathf.Infinity, boxCastLayerMask);
         rb.velocity = new Vector2(speed * horizontalInput, rb.velocity.y);
-        Debug.Log(holdingJump);
+        tbd();
+        if (left.distance < 0.52 && left.collider != null && horizontalInput < 0)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+        }
+        else if (right.distance < 0.52 && right.collider != null && horizontalInput > 0)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+        }
     }
 
     public void Move(CallbackContext context)
@@ -43,38 +54,25 @@ public class Movement : MonoBehaviour
     }
     public void Jump(CallbackContext context)
     {
-        if (!context.performed || isAirborne)
+        if (context.started && isAirborne && jumpStage < maxJumps)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, 8);
+            isAirborne = true;
+            jumpStage++;
+            return;
+        }
+        if (isAirborne)
         {
             return;
         }
-
-
-        rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-
-        isAirborne = true;
-    }
-    public void Gravity(CallbackContext context)
-    {
         if (context.started)
         {
-            holdingJump = true;
+            rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            isAirborne = true;
+            jumpStage++;
         }
-        else if (context.canceled)
-        {
-            holdingJump = false;
-        }
-    }
-    public void tbd()
-    {
-        if (rb.velocity.y < 0 && !holdingJump)
-        {
-            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
-        }
-        else if (rb.velocity.y > 0 && holdingJump)
-        {
-            rb.velocity += Vector2.up * Physics2D.gravity.y * (slowFallMultiplier - 1) * Time.deltaTime;
-        }
-    }
-    
 
+    }
+    public void Gravity(CallbackContext context) { holdingJump = context.started ? true : context.canceled ? false : holdingJump; }
+    public void tbd() { rb.gravityScale = holdingJump ? slowFallMultiplier : fallMultiplier; }
 }
