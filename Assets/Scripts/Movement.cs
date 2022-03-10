@@ -18,17 +18,18 @@ public class Movement : MonoBehaviour
     public LayerMask boxCastLayerMask;
     public int jumpStage;
     public int maxJumps;
+    private float coyoteTime = .3f;
+    private float coyoteTimeCounter;
 
-    void Start()
-    {
-    } 
+
 
     private void Update()
     {
 
         RaycastHit2D down = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, boxCastLayerMask);
         isAirborne = down.distance > 0.61;
-        if (!isAirborne) { jumpStage = 1; }
+        if (!isAirborne) { jumpStage = 1; coyoteTimeCounter = coyoteTime; }
+        else { coyoteTimeCounter -= Time.deltaTime; }
 
     }
     void FixedUpdate()
@@ -61,7 +62,7 @@ public class Movement : MonoBehaviour
             jumpStage++;
             return;
         }
-        if (isAirborne)
+        if (coyoteTimeCounter < 0)
         {
             return;
         }
@@ -70,9 +71,13 @@ public class Movement : MonoBehaviour
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             isAirborne = true;
             jumpStage++;
+            coyoteTimeCounter = 0f;
         }
 
     }
     public void Gravity(CallbackContext context) { holdingJump = context.started ? true : context.canceled ? false : holdingJump; }
     public void tbd() { rb.gravityScale = holdingJump ? slowFallMultiplier : fallMultiplier; }
+   
+
 }
+

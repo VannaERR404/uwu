@@ -27,7 +27,7 @@ public class FollowTargetRotate : MonoBehaviour
         if (isPlayer) { FollowPlayer(); return; }
         Vector2 directionFromSelfToTarget = (targetTransform.position - selfTransform.position).normalized;
         transform.position = offset * (Vector3)directionFromSelfToTarget + selfTransform.position;
-        transform.rotation = Quaternion.Euler(Quaternion.LookRotation(transform.forward, directionFromSelfToTarget).eulerAngles + new Vector3(0, 0, 90));
+        transform.rotation = Quaternion.Euler(Quaternion.LookRotation(transform.forward, directionFromSelfToTarget).eulerAngles);
     }
     void FollowPlayer()
     {
@@ -37,6 +37,6 @@ public class FollowTargetRotate : MonoBehaviour
         Vector3 playerScreenPosition = cam.WorldToScreenPoint(selfTransform.position);
         Vector2 directionFromPlayerToMouse = (mouse.position.ReadValue() - (Vector2)playerScreenPosition).normalized;
         transform.position = offset * (Vector3)directionFromPlayerToMouse + selfTransform.position;
-        transform.rotation = Quaternion.Euler(Quaternion.LookRotation(transform.forward, directionFromPlayerToMouse).eulerAngles + new Vector3(0, 0, 90));
+        transform.rotation = Quaternion.Euler(Quaternion.LookRotation(transform.forward, directionFromPlayerToMouse).eulerAngles);
     }
 }

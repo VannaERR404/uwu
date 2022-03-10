@@ -8,15 +8,19 @@ public class Bullet : MonoBehaviour
 
     void Start()
     {
-        rb.AddForce(transform.up * 1f, ForceMode2D.Impulse);
-        Destroy(gameObject, 2.5f);
+        rb.AddForce(transform.up * 17f, ForceMode2D.Impulse);
+        Destroy(gameObject, 5f);
     }
     void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider.TryGetComponent<IHealth>(out IHealth hit))
         {
-            hit.TakeDamage(9000000000000000000);
+            hit.TakeDamage(1);
         }
+        Destroy(gameObject);
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
         Destroy(gameObject);
     }
 }

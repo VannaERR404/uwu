@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour, IHealth
 
     public void Dead()
     {
+        GameObject.Destroy(myGun);
         GameObject.Destroy(gameObject);
     }
 
@@ -35,6 +36,7 @@ public class Enemy : MonoBehaviour, IHealth
 
     void Start()
     {
+        currentHealth = maxHealth;
         player = GameObject.Find("Player");
         myGun = Instantiate(gun);
         StartFollow();

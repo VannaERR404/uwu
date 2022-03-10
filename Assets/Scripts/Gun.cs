@@ -11,7 +11,7 @@ public class Gun : MonoBehaviour
     public void Fire(CallbackContext context)
     {
         if (!context.performed) return;
-        Instantiate(bullet, firepoint.position, Quaternion.Euler(transform.rotation.eulerAngles - new Vector3(0, 0, 90)));
+        Instantiate(bullet, firepoint.position, Quaternion.Euler(transform.rotation.eulerAngles));
     }
 
 }

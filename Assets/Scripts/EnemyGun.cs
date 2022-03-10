@@ -22,6 +22,6 @@ public class EnemyGun : MonoBehaviour
     }
     void Fire()
     {
-        Instantiate(Bullet, firepoint.position, Quaternion.Euler(transform.rotation.eulerAngles - new Vector3(0, 0, 90)));
+        Instantiate(Bullet, firepoint.position, Quaternion.Euler(transform.rotation.eulerAngles));
     }
 }
