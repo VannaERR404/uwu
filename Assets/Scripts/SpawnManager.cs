@@ -29,10 +29,11 @@ public class SpawnManager : MonoBehaviour
     }
     void Spawn()
     { 
-        Instantiate(enemy, spawnPoint.GetComponent<Transform>().position, transform.rotation);
+        GameObject.Instantiate(enemy, spawnPoint.GetComponent<Transform>().position, transform.rotation);
         n = Random.Range(0, spawners.Length);
         spawnPoint = spawners[n];
     }
+    
 
 
 }
